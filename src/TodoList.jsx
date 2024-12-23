@@ -129,7 +129,7 @@ const TodoList = ({ }) => {
         {/* <h1 className="text-3xl">A To-Do List App</h1> */}
         <div className="flex gap-10 mt-3">
           <a
-            href="/ErrorPage"
+            href="./ErrorPage"
             className="bg-teal-400 text-black p-2 rounded-[5px] transition transform active:scale-95"
           >
             404 Page

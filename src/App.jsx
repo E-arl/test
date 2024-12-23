@@ -1,8 +1,8 @@
 import TodoList from "./TodoList.jsx";
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import ErrorPage from "./ErrorPage.jsx";
-import ErrorBoundary from "./ErrorBoundary.jsx";
+import ErrorPage from "../ErrorPage.jsx";
+import ErrorBoundary from "../ErrorBoundary.jsx";
 import TodoDetail from "./TodoDetail.jsx";
 import { data } from "./data";
 
