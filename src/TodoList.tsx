@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { data } from "./data";
 import { Link } from "react-router-dom";
+import { data } from "./data"; // Keep for types
+
 import {
   MdAddTask,
   MdSkipPrevious,
@@ -12,41 +13,48 @@ import {
   MdCircle,
 } from "react-icons/md";
 
-const TodoList = ({ }) => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage] = useState(10);
-  const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCompleted, setFilterCompleted] = useState("");
-  const [loading, setLoading] = useState(true);
+// Define the type for a single todo item
+type TodoItem = typeof data[number];
 
-  const [newTodo, setNewTodo] = useState(""); // For adding new items
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
-  const [editingId, setEditingId] = useState(null); // For editing items
-  const [editingTitle, setEditingTitle] = useState(""); // For the edit input
+interface TodoListProps {
+  items: TodoItem[];
+  setItems: React.Dispatch<React.SetStateAction<TodoItem[]>>;
+}
 
-  
+const TodoList: React.FC<TodoListProps> = ({ items, setItems }) => {
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [itemsPerPage] = useState<number>(10);
+  const [filteredItems, setFilteredItems] = useState<TodoItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterCompleted, setFilterCompleted] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Load initial data
+  const [newTodo, setNewTodo] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState<string>("");
+
+  const triggerError = (shouldThrow: boolean) => {
+    if (shouldThrow) {
+      throw new Error("Simulated error for ErrorBoundary test");
+    }
+  };
+
+  // Set loading to false after mount (you can optionally skip this)
   useEffect(() => {
-    setItems(data);
-    setFilteredItems(data);
     setLoading(false);
   }, []);
 
   // Filter and search logic
   useEffect(() => {
-    let updatedItems = items;
+    let updatedItems = [...items];
 
-    // Filter by completion status
     if (filterCompleted !== "") {
       updatedItems = updatedItems.filter(
         (item) => item.completed === (filterCompleted === "true")
       );
     }
 
-    // Search by title
     if (searchTerm.trim() !== "") {
       updatedItems = updatedItems.filter((item) =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,21 +62,18 @@ const TodoList = ({ }) => {
     }
 
     setFilteredItems(updatedItems);
-    setCurrentPage(0); // Reset to first page on new filter/search
+    setCurrentPage(0);
   }, [searchTerm, filterCompleted, items]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const currentItems = filteredItems.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
 
-
-  // Add new item
   const handleAddTodo = () => {
     if (newTodo.trim()) {
-      const newItem = {
+      const newItem: TodoItem = {
         userId: 1,
         id: items.length + 1,
         title: newTodo,
@@ -76,17 +81,15 @@ const TodoList = ({ }) => {
       };
       setItems((prev) => [newItem, ...prev]);
       setNewTodo("");
-      setIsModalOpen(false); // Close modal after adding
+      setIsModalOpen(false);
     }
   };
 
-  // Delete an item
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Edit an item
-  const handleEdit = (id, title) => {
+  const handleEdit = (id: number, title: string) => {
     setEditingId(id);
     setEditingTitle(title);
   };
@@ -101,8 +104,7 @@ const TodoList = ({ }) => {
     setEditingTitle("");
   };
 
-  // Toggle completion status
-  const toggleCompletion = (id) => {
+  const toggleCompletion = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, completed: !item.completed } : item
@@ -110,7 +112,6 @@ const TodoList = ({ }) => {
     );
   };
 
-  // Pagination handlers
   const handleNext = () => {
     if (currentPage < totalPages - 1) {
       setCurrentPage((prev) => prev + 1);
@@ -122,7 +123,6 @@ const TodoList = ({ }) => {
       setCurrentPage((prev) => prev - 1);
     }
   };
-
   return (
     <div>
       <div className="flex flex-col place items-center p-5">
